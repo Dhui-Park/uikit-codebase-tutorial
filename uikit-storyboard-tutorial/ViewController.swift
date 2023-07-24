@@ -5,6 +5,7 @@
 //  Created by dhui on 2023/07/06.
 //
 
+import Foundation
 import UIKit
 import Cosmos
 import PhotosUI
@@ -57,7 +58,15 @@ class ViewController: UIViewController, PHPickerViewControllerDelegate {
         reviewView.layer.borderWidth = 1
         reviewView.layer.borderColor = UIColor.black.cgColor
         
+        // 코스모스 별점 업데이트하기
+        cosmosView.didFinishTouchingCosmos = { rating in
+            var ratings = Int(rating)
+            self.countRatings.text = "\(ratings)점"
+        }
+        
     }
+    
+    
     
     // cameraBtn 클릭시 action
     @IBAction func cameraBtnClicked(_ sender: Any) {
@@ -80,6 +89,7 @@ class ViewController: UIViewController, PHPickerViewControllerDelegate {
         // modal로 사진 설정하는 view 올라옴.
         self.present(picker, animated: true)
     }
+    
     
     
 
@@ -108,6 +118,7 @@ extension ViewController: UITextViewDelegate {
 
 class MyTextView: UITextView {
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        // swift textview restrict paste
         
         // 복사는 안되는데 왜 클릭만 해도 밑에 로그가 뜰까요?
         // UIResponderStandardEditActions.cut(_:)으로 하면 복사는 가능합니다.
