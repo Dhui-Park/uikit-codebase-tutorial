@@ -8,6 +8,7 @@
 import UIKit
 import Cosmos
 import PhotosUI
+import UITextView_Placeholder
 
 class ViewController: UIViewController, PHPickerViewControllerDelegate {
 
@@ -25,7 +26,6 @@ class ViewController: UIViewController, PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         // 사진 선택 후 modal이 dismiss
         dismiss(animated: true)
-        
         
         for item in results {
             item.itemProvider.loadObject(ofClass: UIImage.self) { (image, error) in
@@ -45,15 +45,13 @@ class ViewController: UIViewController, PHPickerViewControllerDelegate {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
+        reviewView.placeholder = "내용을 입력해주세요."
+        reviewView.placeholderColor = .lightGray
         
         // https://declan.tistory.com/14 참고
         
         // textView에 delegate 상속
         reviewView.delegate = self
-        
-        //처음 화면이 로드되었을 때 placeholder 처럼 띄우기
-        reviewView.text = "내용을 입력해주세요."
-        reviewView.textColor = UIColor.lightGray
         
         // textView border
         reviewView.layer.borderWidth = 1
@@ -85,10 +83,7 @@ class ViewController: UIViewController, PHPickerViewControllerDelegate {
     
     
 
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.reviewView.resignFirstResponder()
-        
-    }
+   
 }
 
 // delegate 패턴에 대해서 - https://velog.io/@nala/iOS-Delegate-%ED%8C%A8%ED%84%B4%EC%9D%84-%EC%9D%B4%ED%95%B4%ED%95%B4%EB%B3%B4%EC%9E%90
@@ -97,21 +92,8 @@ class ViewController: UIViewController, PHPickerViewControllerDelegate {
 
 extension ViewController: UITextViewDelegate {
     
-    func textViewDidEndEditing(_ textView: UITextView) {
-            if reviewView.text.isEmpty {
-                reviewView.text =  "내용을 입력해주세요."
-                reviewView.textColor = UIColor.lightGray
-            }
-        }
-
-        
-    func textViewDidBeginEditing(_ textView: UITextView) {
-            if reviewView.textColor == UIColor.lightGray {
-                reviewView.text = nil
-                reviewView.textColor = UIColor.black
-            }
-        }
     
+   
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         let currentText = reviewView.text ?? ""
         guard let stringRange = Range(range, in: currentText) else { return false }
@@ -124,3 +106,15 @@ extension ViewController: UITextViewDelegate {
 }
 
 
+class MyTextView: UITextView {
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        
+        // 복사는 안되는데 왜 클릭만 해도 밑에 로그가 뜰까요?
+        // UIResponderStandardEditActions.cut(_:)으로 하면 복사는 가능합니다.
+        if action == #selector(UIResponderStandardEditActions.paste(_:)) {
+            print(#fileID, #function, #line, "- 복사할겨?")
+            return false
+        }
+        return super.canPerformAction(action, withSender: sender)
+    }
+}
