@@ -13,12 +13,14 @@ import UITextView_Placeholder
 
 class ViewController: UIViewController, PHPickerViewControllerDelegate {
 
+    
     @IBOutlet weak var reviewView: UITextView!
+    // 리뷰 글자 수
     @IBOutlet weak var countLabel: UILabel!
     @IBOutlet weak var cosmosView: CosmosView!
+    // 별점 개수
     @IBOutlet weak var countRatings: UILabel!
     @IBOutlet weak var photoDetail: UIView!
-    
     @IBOutlet weak var pickedPhotoView: UIImageView!
     
     
@@ -46,8 +48,16 @@ class ViewController: UIViewController, PHPickerViewControllerDelegate {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
+        
+        
+        //MARK: - 세번째 과제 1
+        // UITextView + Placeholder 패키지 사용
         reviewView.placeholder = "내용을 입력해주세요."
         reviewView.placeholderColor = .lightGray
+        
+        
+        
+        
         
         // https://declan.tistory.com/14 참고
         
@@ -58,9 +68,15 @@ class ViewController: UIViewController, PHPickerViewControllerDelegate {
         reviewView.layer.borderWidth = 1
         reviewView.layer.borderColor = UIColor.black.cgColor
         
+        
+        
+        
+        
+        
+        //MARK: - 세번째 과제 2
         // 코스모스 별점 업데이트하기
         cosmosView.didFinishTouchingCosmos = { rating in
-            var ratings = Int(rating)
+            let ratings = Int(rating)
             self.countRatings.text = "\(ratings)점"
         }
         
@@ -102,8 +118,6 @@ class ViewController: UIViewController, PHPickerViewControllerDelegate {
 
 extension ViewController: UITextViewDelegate {
     
-    
-   
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         let currentText = reviewView.text ?? ""
         guard let stringRange = Range(range, in: currentText) else { return false }
@@ -111,19 +125,23 @@ extension ViewController: UITextViewDelegate {
         let changedText = currentText.replacingCharacters(in: stringRange, with: text)
         
         countLabel.text = "\(changedText.count) / 20"
-        return changedText.count <= 19
+        return changedText.count < 20
     }
 }
 
 
 class MyTextView: UITextView {
+    
+    
+    
+    //MARK: - 세번째 과제 3
+    // swift textview restrict paste
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        // swift textview restrict paste
         
-        // 복사는 안되는데 왜 클릭만 해도 밑에 로그가 뜰까요?
+        // 붙여넣기는 안되는데 왜 클릭만 해도 밑에 로그가 뜰까요?
         // UIResponderStandardEditActions.cut(_:)으로 하면 복사는 가능합니다.
         if action == #selector(UIResponderStandardEditActions.paste(_:)) {
-            print(#fileID, #function, #line, "- 복사할겨?")
+            print(#fileID, #function, #line, "- 붙여넣기 할겨?")
             return false
         }
         return super.canPerformAction(action, withSender: sender)
